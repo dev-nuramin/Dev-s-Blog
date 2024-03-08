@@ -1,47 +1,70 @@
 import User from "../models/user.models.js";
-
-
-
+import bcrypt from "bcryptjs"
 /**
  * @DESC create users data
  * @ROUTE /api/v1/user
  * @method POST
  * @access public
  */
-export const createUser = async(req, res) => {
-  const {name, userName, email, password} = req.body;
+export const createUser = async (req, res, next) => {
+  const { name, userName, email, password } = req.body;
 
-  if(!name || !userName || !email || !password || name === '' || userName === '' || email === '' || password === ''){
-    res.status(401).json({msg: "All fields are required"})
+  // validation form 
+  if (
+    !name ||
+    !userName ||
+    !email ||
+    !password ||
+    name === "" ||
+    userName === "" ||
+    email === "" ||
+    password === ""
+  ) {
+    res.status(401).json({ msg: "All fields are required" });
   }
 
+  const checkUser = await User.findOne({email})
+  const checkUserName = await User.findOne({userName})
+
+ // check email
+  if(checkUser){
+    res.status(401).json({message: "This email already our record"})
+  }
+  // check username
+  if(checkUserName){
+    res.status(401).json({message: "Try unique username"})
+  }
+  // password hash
+  const hashPassword = bcrypt.hashSync(password, 10);
   const newUser = User({
     userName,
-    name, 
-    password,
-    email
-  })
+    name,
+    password : hashPassword,
+    email,
+  });
 
-  try {
-    await newUser.save()
-    res.status(200).json({user: newUser, msg: "User create successful"})
-  } catch (error) {
-    
+  if(!checkUser){
+    try {
+      await newUser.save();
+      res.status(200).json({ user: newUser, msg: "Signup successful" });
+    } catch (error) {
+      next(error)
+    }
   }
-}
+  
+};
 /**
  * @DESC Get all users data
  * @ROUTE /api/v1/auth
  * @method GET
  * @access public
  */
-export const getAllUser = async(req, res) => {
+export const getAllUser = async (req, res) => {
+  const users = await User.find();
 
-    const users = await User.find();
+  if (users.length === 0) {
+    return res.status(404).json({ message: "User data not found" });
+  }
 
-    if (users.length === 0) {
-      return res.status(404).json({ message: "User data not found" });
-    }
-  
-    res.status(200).json(users);
-}
+  res.status(200).json(users);
+};
