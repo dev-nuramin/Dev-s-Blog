@@ -35,9 +35,9 @@ app.listen(SERVER_PORT, () => {
 app.use('/api/v1/auth', authRouter)
 
 // error handler
-// app.use((err, req, res, next) => {
-//   const statusCode = err.statusCode ? err.statusCode : 500
-//   const message = err.message ? err.message: "Internal server error"
+// app.use((error, req, res, next) => {
+//   const statusCode = error.statusCode ? error.statusCode : 500
+//   const message = error.message ? error.message: "Internal server error"
 
 //   res.status(statusCode).json({
 //     success: false,
