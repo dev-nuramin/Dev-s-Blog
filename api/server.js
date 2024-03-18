@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import colors from "colors";
+import cors from "cors"
 import mongoDBConnect from "./Database/db.js";
 import authRouter from './routers/auth.routes.js'
 import {errorHandler} from "./middlewares/errorHandler.js";
@@ -16,8 +17,15 @@ const SERVER_PORT = process.env.PORT || 9090;
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-//creating path
+// initialised cors
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
+//creating path
 app.use(express.static('public'))
 
 //use error hander

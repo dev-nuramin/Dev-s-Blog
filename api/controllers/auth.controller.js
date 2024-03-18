@@ -8,16 +8,16 @@ import { customError } from "../utils/error.js";
  * @access public
  */
 export const createUser = async (req, res, next) => {
-  const { name, userName, email, password } = req.body;
+  const { name, username, email, password } = req.body;
 
   // validation form
   if (
     !name ||
-    !userName ||
+    !username ||
     !email ||
     !password ||
     name === "" ||
-    userName === "" ||
+    username === "" ||
     email === "" ||
     password === ""
   ) {
@@ -26,7 +26,7 @@ export const createUser = async (req, res, next) => {
   }
 
   const checkUser = await User.findOne({ email });
-  const checkUserName = await User.findOne({ userName });
+  const checkUserName = await User.findOne({ username });
 
   // check email
   if (checkUser) {
@@ -41,7 +41,7 @@ export const createUser = async (req, res, next) => {
   // password hash
   const hashPassword = bcrypt.hashSync(password, 10);
   const newUser = User({
-    userName,
+    username,
     name,
     password: hashPassword,
     email,
